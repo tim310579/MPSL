@@ -28,9 +28,9 @@ compare:
 	b inner_loop
 
 swap:
-	add r4, r3, #-1
+	add r8, r3, #-1
 	strb r1, [r0, r3]	//swap their position
-	strb r2, [r0, r4]
+	strb r2, [r0, r8]
 	b inner_loop
 main3:
 
@@ -41,9 +41,6 @@ main3_2:
 
 	mov r5, #7
 	ldr r0, =arr2
-
 	bl do_sort
 L3:
-	ldrb r8, [r0, #8]
-	ldrb r9, [r0, #9]
 	b L3
