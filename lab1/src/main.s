@@ -6,8 +6,8 @@
 	result: .byte 0
 .text
 	.global main
-.equ X, 0x55BB
-.equ Y, 0xAA55
+.equ X, 0x1234
+.equ Y, 0x4567
 hamm:
 	//TODO
 	mov R7, #0
@@ -25,7 +25,7 @@ countadd:
 	add R7, #1
 	b count
 main:
-	//b main2
+	b main2
 	//b main3
 	ldr R0, =#X //This code will cause assemble error. Why? And how
 	ldr R1, =#Y

@@ -4,8 +4,8 @@
 
 .text
 .global main2
-	.equ N, -87
-	.equ OVER, 0x80000000
+	.equ N, 77
+	//.equ OVER, 0x80000000
 fib:
 	//TODO
 	mov r2, #1
@@ -15,11 +15,14 @@ fact:
 	sub r1, r1, #1
 	cmp r1, #1
 	beq L2
-	add r4, r2, r3
-	mov r5, #OVER
-	and r5, r5, r4
-	cmp r5, #0
-	bne N_2
+	adds r4, r2, r3
+	BVS N_2
+	//mov r5, #OVER
+	//and r5, r5, r4
+	//cmp r5, #0
+	//bne N_2
+
+
 	mov r2, r3
 	mov r3, r4
 	b fact
