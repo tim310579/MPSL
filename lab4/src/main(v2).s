@@ -1,4 +1,4 @@
-.syntax unified
+	.syntax unified
 	.cpu cortex-m4
 	.thumb
 .data
@@ -281,11 +281,11 @@ button_delay:
 
 button_check:
 	ldrh r1, [r10]
-	lsr r1, 13
+	lsr r1, 13	//r1==0, ->pressed, ==1->not pressed
 	mov  r4, 1
-	ands r1, r4
-	beq  button_plus
-
+	ands r1, r4	//r1,30ms later: 0->1, means pressed and leave
+	beq  button_plus	//if button still be pressed, and resume for 30*30ms = 900ms = 1sec
+						//means it will be clear to 0, then branch to main
 	cmp  r9, 31
 	bge  main
 	mov  r9, 0
