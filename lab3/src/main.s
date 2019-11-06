@@ -3,7 +3,7 @@
 	.thumb
 
 .data
-	password: .byte 0b1100
+	password: .byte 0b1011
 	Press: .byte 0
 	.align
 
@@ -49,7 +49,8 @@ GPIO_init:
 	ldr  r1, =GPIOC_PUPDR
 	ldr  r0, [r1]	//r0 = 0x0000 0000(reset)
 	ldr  r2, =0b01010101
-	//and  r0, 0xFFFFFF00
+
+	and  r0, 0xFFFFFF00
 	orr  r0, r2
 	str  r0, [r1]
 
@@ -90,11 +91,12 @@ button_restart:
 
 read_switch:
 	ldrh r1, [r12]
+
 	and  r1, 0b1111
+	eor  r1, 0b1111
 
 	ldr  r0, =password
-	ldrb r0, [r0]
-
+	ldr  r0, [r0]
 	cmp  r0, r1
 	mov  r1, 0b11111111
 	mov  r2, 0b0
