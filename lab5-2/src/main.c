@@ -99,15 +99,14 @@ int main()
 	keypad_init();
 	while(1){
 		int input = keypad_scan();
-			if(input == 255){
-				display(input, 0);
-			}
-			else if (input >= 10){
-				display(input, 2);
-			}
-			else if (input >= 0) {
-				display(input, 1);
-			}
-
+		if(input >= 100){
+			display(input, 0);
+		}
+		else if (input >= 10){
+			display(input, 2);
+		}
+		else if (input >= 0) {
+			display(input, 1);
+		}
 	}
 }
