@@ -47,7 +47,7 @@ void keypad_init()
  *   >=0: key pressed value
  *   -1: no key press
  */
-char keypad_scan()
+signed char keypad_scan()
 {
 	GPIOA->BSRR = X0;
 	GPIOA->BRR = X1;
@@ -99,14 +99,14 @@ int main()
 	keypad_init();
 	while(1){
 		int input = keypad_scan();
-		if(input >= 100){
-			display(input, 0);
-		}
-		else if (input >= 10){
+		if (input >= 10 && input < 100){
 			display(input, 2);
 		}
 		else if (input >= 0) {
 			display(input, 1);
+		}
+		else{
+			display(input, 0);
 		}
 	}
 }
