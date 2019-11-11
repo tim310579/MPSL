@@ -20,7 +20,7 @@
 void keypad_init()
 {
 
-	RCC->AHB2ENR = RCC->AHB2ENR|0x6;
+	RCC->AHB2ENR = RCC->AHB2ENR|0x2;
 	GPIOC->MODER   &= 0b11111111111111111111111100000000;
 	GPIOC->MODER   |= 0b00000000000000000000000001010101;
 	GPIOC->PUPDR   &= 0b11111111111111111111111100000000;
@@ -32,8 +32,8 @@ void keypad_init()
 	GPIOB->MODER   &= 0b11111111111111111100000000111111;
 	GPIOB->PUPDR   &= 0b11111111111111111100000000111111;
 	GPIOB->PUPDR   |= 0b00000000000000000010101010000000;
-	GPIOB->OSPEEDR &= 0b11111111111111111100000000111111;
-	GPIOB->OSPEEDR |= 0b00000000000000000001010101000000;
+	GPIOB->OSPEEDR &= 0b11111111111111111111111100000000;
+	GPIOB->OSPEEDR |= 0b00000000000000000000000001010101;
 }
 
 /**
@@ -46,16 +46,29 @@ void keypad_init()
 
 signed char keypad_scan()
 {
-     int ret = -1;
+	RCC->AHB2ENR = RCC->AHB2ENR|0x2;
+		GPIOC->MODER   &= 0b11111111111111111111111100000000;
+		GPIOC->MODER   |= 0b00000000000000000000000001010101;
+		GPIOC->PUPDR   &= 0b11111111111111111111111100000000;
+		GPIOC->PUPDR   |= 0b00000000000000000000000001010101;
+		GPIOC->OSPEEDR &= 0b11111111111111111111111100000000;
+		GPIOC->OSPEEDR |= 0b00000000000000000000000001010101;
+		GPIOC->ODR     |= 0b00000000000000000000000000001111;
+
+		GPIOB->MODER   &= 0b11111111111111111100000000111111;
+		GPIOB->PUPDR   &= 0b11111111111111111100000000111111;
+		GPIOB->PUPDR   |= 0b00000000000000000010101010000000;
+		GPIOB->OSPEEDR &= 0b11111111111111111111111100000000;
+		GPIOB->OSPEEDR |= 0b00000000000000000000000001010101;
 		//GPIOC->BSRR = X0;
 		//GPIOC->BRR = X1;
 		//GPIOC->BRR = X2;
 		//GPIOC->BRR = X3;
 		GPIOC->ODR = X0;
-		if (GPIOB->IDR & Y0)	ret = 1;
-		if (GPIOB->IDR & Y1)	ret = 4;
-		if (GPIOB->IDR & Y2)	ret = 7;
-		if (GPIOB->IDR & Y3)	ret = 15;/*
+		if (GPIOB->IDR & Y0)	return 1;
+		if (GPIOB->IDR & Y1)	return 4;
+		if (GPIOB->IDR & Y2)	return 7;
+		if (GPIOB->IDR & Y3)	return 15;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 1;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 4;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 7;
@@ -66,10 +79,10 @@ signed char keypad_scan()
 		//GPIOC->BRR = X2;
 		//GPIOC->BRR = X3;
 		GPIOC->ODR = X1;
-		if (GPIOB->IDR & Y0)	ret = 2;
-		if (GPIOB->IDR & Y1)	ret = 5;
-		if (GPIOB->IDR & Y2)	ret = 8;
-		if (GPIOB->IDR & Y3)	ret = 0;/*
+		if (GPIOB->IDR & Y0)	return 2;
+		if (GPIOB->IDR & Y1)	return 5;
+		if (GPIOB->IDR & Y2)	return 8;
+		if (GPIOB->IDR & Y3)	return 0;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 2;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 5;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 8;
@@ -80,10 +93,10 @@ signed char keypad_scan()
 		//GPIOC->BSRR = X2;
 		//GPIOC->BRR = X3;
 		GPIOC->ODR = X2;
-		if (GPIOB->IDR & Y0)	ret = 3;
-		if (GPIOB->IDR & Y1)	ret = 6;
-		if (GPIOB->IDR & Y2)	ret = 9;
-		if (GPIOB->IDR & Y3)	ret = 14;/*
+		if (GPIOB->IDR & Y0)	return 3;
+		if (GPIOB->IDR & Y1)	return 6;
+		if (GPIOB->IDR & Y2)	return 9;
+		if (GPIOB->IDR & Y3)	return 14;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 3;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 6;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 9;
@@ -94,29 +107,41 @@ signed char keypad_scan()
 		//GPIOC->BRR = X2;
 	//	GPIOC->BSRR = X3;
 		GPIOC->ODR = X3;
-		if (GPIOB->IDR & Y0)	ret = 10;
-		if (GPIOB->IDR & Y1)	ret = 11;
-		if (GPIOB->IDR & Y2)	ret = 12;
-		if (GPIOB->IDR & Y3)	ret = 13;/*
+		if (GPIOB->IDR & Y0)	return 10;
+		if (GPIOB->IDR & Y1)	return 11;
+		if (GPIOB->IDR & Y2)	return 12;
+		if (GPIOB->IDR & Y3)	return 13;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 10;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 11;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 12;
 		if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 13;*/
 
-		return ret;
+		return -1;
 }
 signed char keypad_scan_back(){
+	RCC->AHB2ENR = RCC->AHB2ENR|0x2;
+		GPIOC->MODER   &= 0b11111111111111111111111100000000;
+		GPIOC->MODER   |= 0b00000000000000000000000001010101;
+		GPIOC->PUPDR   &= 0b11111111111111111111111100000000;
+		GPIOC->PUPDR   |= 0b00000000000000000000000001010101;
+		GPIOC->OSPEEDR &= 0b11111111111111111111111100000000;
+		GPIOC->OSPEEDR |= 0b00000000000000000000000001010101;
+		GPIOC->ODR     |= 0b00000000000000000000000000001111;
 
-    int ret = -1;
+		GPIOB->MODER   &= 0b11111111111111111100000000111111;
+		GPIOB->PUPDR   &= 0b11111111111111111100000000111111;
+		GPIOB->PUPDR   |= 0b00000000000000000010101010000000;
+		GPIOB->OSPEEDR &= 0b11111111111111111111111100000000;
+		GPIOB->OSPEEDR |= 0b00000000000000000000000001010101;
 	//GPIOC->BRR = X0;
 	//GPIOC->BRR = X1;
 	//GPIOC->BRR = X2;
 	//GPIOC->BSRR = X3;
 	GPIOC->ODR = X3;
-	if (GPIOB->IDR & Y3)	ret = 13;
-	if (GPIOB->IDR & Y2)	ret = 12;
-	if (GPIOB->IDR & Y1)	ret = 11;
-	if (GPIOB->IDR & Y0)	ret = 10;/*
+	if (GPIOB->IDR & Y3)	return 13;
+	if (GPIOB->IDR & Y2)	return 12;
+	if (GPIOB->IDR & Y1)	return 11;
+	if (GPIOB->IDR & Y0)	return 10;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 13;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 12;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 11;
@@ -127,10 +152,10 @@ signed char keypad_scan_back(){
 	//GPIOC->BSRR = X2;
 	//GPIOC->BRR = X3;
 	GPIOC->ODR = X2;
-	if (GPIOB->IDR & Y3)	ret = 14;
-	if (GPIOB->IDR & Y2)	ret = 9;
-	if (GPIOB->IDR & Y1)	ret = 6;
-	if (GPIOB->IDR & Y0)	ret = 3;/*
+	if (GPIOB->IDR & Y3)	return 14;
+	if (GPIOB->IDR & Y2)	return 9;
+	if (GPIOB->IDR & Y1)	return 6;
+	if (GPIOB->IDR & Y0)	return 3;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 14;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 9;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 6;
@@ -141,10 +166,10 @@ signed char keypad_scan_back(){
 	//GPIOC->BRR = X2;
 	//GPIOC->BRR = X3;
 	GPIOC->ODR = X1;
-	if (GPIOB->IDR & Y3)	ret = 0;
-	if (GPIOB->IDR & Y2)	ret = 8;
-	if (GPIOB->IDR & Y1)	ret = 5;
-	if (GPIOB->IDR & Y0)	ret = 2;/*
+	if (GPIOB->IDR & Y3)	return 0;
+	if (GPIOB->IDR & Y2)	return 8;
+	if (GPIOB->IDR & Y1)	return 5;
+	if (GPIOB->IDR & Y0)	return 2;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 0;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 8;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 5;
@@ -155,16 +180,16 @@ signed char keypad_scan_back(){
 	//GPIOC->BRR = X2;
 	//GPIOC->BRR = X3;
 	GPIOC->ODR = X0;
-	if (GPIOB->IDR & Y3)	ret = 15;
-	if (GPIOB->IDR & Y2)	ret = 7;
-	if (GPIOB->IDR & Y1)	ret = 4;
-	if (GPIOB->IDR & Y0)	ret = 1;/*
+	if (GPIOB->IDR & Y3)	return 15;
+	if (GPIOB->IDR & Y2)	return 7;
+	if (GPIOB->IDR & Y1)	return 4;
+	if (GPIOB->IDR & Y0)	return 1;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 15;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 7;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 4;
 	if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 1;*/
 
-	return ret;
+	return -1;
 }
 
 int main()
@@ -195,7 +220,10 @@ int main()
 				sum = input;
 
 			}
-
+			if(input != tmp_input){
+				if(input == -1) sum = tmp_input;
+				else if(tmp_input == -1) sum = input;
+			}
 			if(input != tmp_input && input != -1 && tmp_input != -1) {
 				//choose[input] = 1;
 				//choose[tmp_input] = 1;
