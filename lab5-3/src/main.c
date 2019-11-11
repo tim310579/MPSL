@@ -46,15 +46,16 @@ void keypad_init()
 
 signed char keypad_scan()
 {
+     int ret = -1;
 		//GPIOC->BSRR = X0;
 		//GPIOC->BRR = X1;
 		//GPIOC->BRR = X2;
 		//GPIOC->BRR = X3;
 		GPIOC->ODR = X0;
-		if (GPIOB->IDR & Y0)	return 1;
-		if (GPIOB->IDR & Y1)	return 4;
-		if (GPIOB->IDR & Y2)	return 7;
-		if (GPIOB->IDR & Y3)	return 15;/*
+		if (GPIOB->IDR & Y0)	ret = 1;
+		if (GPIOB->IDR & Y1)	ret = 4;
+		if (GPIOB->IDR & Y2)	ret = 7;
+		if (GPIOB->IDR & Y3)	ret = 15;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 1;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 4;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 7;
@@ -65,10 +66,10 @@ signed char keypad_scan()
 		//GPIOC->BRR = X2;
 		//GPIOC->BRR = X3;
 		GPIOC->ODR = X1;
-		if (GPIOB->IDR & Y0)	return 2;
-		if (GPIOB->IDR & Y1)	return 5;
-		if (GPIOB->IDR & Y2)	return 8;
-		if (GPIOB->IDR & Y3)	return 0;/*
+		if (GPIOB->IDR & Y0)	ret = 2;
+		if (GPIOB->IDR & Y1)	ret = 5;
+		if (GPIOB->IDR & Y2)	ret = 8;
+		if (GPIOB->IDR & Y3)	ret = 0;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 2;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 5;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 8;
@@ -79,10 +80,10 @@ signed char keypad_scan()
 		//GPIOC->BSRR = X2;
 		//GPIOC->BRR = X3;
 		GPIOC->ODR = X2;
-		if (GPIOB->IDR & Y0)	return 3;
-		if (GPIOB->IDR & Y1)	return 6;
-		if (GPIOB->IDR & Y2)	return 9;
-		if (GPIOB->IDR & Y3)	return 14;/*
+		if (GPIOB->IDR & Y0)	ret = 3;
+		if (GPIOB->IDR & Y1)	ret = 6;
+		if (GPIOB->IDR & Y2)	ret = 9;
+		if (GPIOB->IDR & Y3)	ret = 14;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 3;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 6;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 9;
@@ -93,28 +94,29 @@ signed char keypad_scan()
 		//GPIOC->BRR = X2;
 	//	GPIOC->BSRR = X3;
 		GPIOC->ODR = X3;
-		if (GPIOB->IDR & Y0)	return 10;
-		if (GPIOB->IDR & Y1)	return 11;
-		if (GPIOB->IDR & Y2)	return 12;
-		if (GPIOB->IDR & Y3)	return 13;/*
+		if (GPIOB->IDR & Y0)	ret = 10;
+		if (GPIOB->IDR & Y1)	ret = 11;
+		if (GPIOB->IDR & Y2)	ret = 12;
+		if (GPIOB->IDR & Y3)	ret = 13;/*
 		if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 10;
 		if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 11;
 		if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 12;
 		if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 13;*/
 
-		return -1;
+		return ret;
 }
 signed char keypad_scan_back(){
 
+    int ret = -1;
 	//GPIOC->BRR = X0;
 	//GPIOC->BRR = X1;
 	//GPIOC->BRR = X2;
 	//GPIOC->BSRR = X3;
 	GPIOC->ODR = X3;
-	if (GPIOB->IDR & Y3)	return 13;
-	if (GPIOB->IDR & Y2)	return 12;
-	if (GPIOB->IDR & Y1)	return 11;
-	if (GPIOB->IDR & Y0)	return 10;/*
+	if (GPIOB->IDR & Y3)	ret = 13;
+	if (GPIOB->IDR & Y2)	ret = 12;
+	if (GPIOB->IDR & Y1)	ret = 11;
+	if (GPIOB->IDR & Y0)	ret = 10;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 13;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 12;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 11;
@@ -125,10 +127,10 @@ signed char keypad_scan_back(){
 	//GPIOC->BSRR = X2;
 	//GPIOC->BRR = X3;
 	GPIOC->ODR = X2;
-	if (GPIOB->IDR & Y3)	return 14;
-	if (GPIOB->IDR & Y2)	return 9;
-	if (GPIOB->IDR & Y1)	return 6;
-	if (GPIOB->IDR & Y0)	return 3;/*
+	if (GPIOB->IDR & Y3)	ret = 14;
+	if (GPIOB->IDR & Y2)	ret = 9;
+	if (GPIOB->IDR & Y1)	ret = 6;
+	if (GPIOB->IDR & Y0)	ret = 3;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 14;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 9;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 6;
@@ -139,10 +141,10 @@ signed char keypad_scan_back(){
 	//GPIOC->BRR = X2;
 	//GPIOC->BRR = X3;
 	GPIOC->ODR = X1;
-	if (GPIOB->IDR & Y3)	return 0;
-	if (GPIOB->IDR & Y2)	return 8;
-	if (GPIOB->IDR & Y1)	return 5;
-	if (GPIOB->IDR & Y0)	return 2;/*
+	if (GPIOB->IDR & Y3)	ret = 0;
+	if (GPIOB->IDR & Y2)	ret = 8;
+	if (GPIOB->IDR & Y1)	ret = 5;
+	if (GPIOB->IDR & Y0)	ret = 2;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 0;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 8;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 5;
@@ -153,16 +155,16 @@ signed char keypad_scan_back(){
 	//GPIOC->BRR = X2;
 	//GPIOC->BRR = X3;
 	GPIOC->ODR = X0;
-	if (GPIOB->IDR & Y3)	return 15;
-	if (GPIOB->IDR & Y2)	return 7;
-	if (GPIOB->IDR & Y1)	return 4;
-	if (GPIOB->IDR & Y0)	return 1;/*
+	if (GPIOB->IDR & Y3)	ret = 15;
+	if (GPIOB->IDR & Y2)	ret = 7;
+	if (GPIOB->IDR & Y1)	ret = 4;
+	if (GPIOB->IDR & Y0)	ret = 1;/*
 	if (GPIO_ReadInputDataBit(GPIOB, Y3))	return 15;
 	if (GPIO_ReadInputDataBit(GPIOB, Y2))	return 7;
 	if (GPIO_ReadInputDataBit(GPIOB, Y1))	return 4;
 	if (GPIO_ReadInputDataBit(GPIOB, Y0))	return 1;*/
 
-	return -1;
+	return ret;
 }
 
 int main()
