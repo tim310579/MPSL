@@ -18,14 +18,25 @@ extern void max7219_send(unsigned char address, unsigned char data);
  *   -1: illegal data range (out of 8 digits)
  */
 int display(int data, int num_digs){
+	int i;
+	if(data == -1){
+		for(i = 1; i <= 8; i ++){
+				max7219_send(i, 15);
+			}
+		return 0;
+	}
+
+	for(i = num_digs+1; i <= 8; i ++){
+		max7219_send(i, 15);
+	}
 	if(num_digs == 0){
-		int i;
+
 		for(i = 1; i <= 8; i++){
 			max7219_send(i, 15);
 		}
 		return 0;
 	}
-	int i;
+
 		int neg = 0;
 		int over = 0;
 		if(data < 0){
