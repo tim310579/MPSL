@@ -4,6 +4,12 @@
 
 int plln = 16, pllm = 7, prescaler = 9;
 
+void delay_1s(){
+	int i = 4000000;
+	while(i > 0){
+		i -= 4;
+	}
+}
 void SystemClock_Config()
 {
 		RCC->CFGR = 0x00000000;
@@ -40,13 +46,13 @@ int main(){
 					plln = 16;
 					pllm = 7;	//pllm = 8
 					prescaler = 9;	//clc / 4
-					//sys clk = f(4)*plln(16)/pllm(8)/pllr(default=2)
-					//sys clk / 4(pre == 9)
+					//sys clk = f(default =4M)*plln(16)/pllm(8)/pllr(default=2)
+					//sys clk / 4(pre == 9) = 1M
 					break;
 				case 6:
 					plln = 24;
 					pllm = 7;	//pllm = 8
-					prescaler = 0;
+					prescaler = 0;	//clc no change
 					//4*24/8/2
 					break;
 				case 10:
@@ -75,10 +81,12 @@ int main(){
 				i = (i+1)%5;
 				state = status[i];
 
-			GPIOA->BSRR = (1 << 5);
-			Delay1sWith4MHz();
 			GPIOA->BRR = (1 << 5);
-			Delay1sWith4MHz();
+			//Delay1sWith4MHz();
+			delay_1s();
+			GPIOA->BSRR = (1 << 5);
+			delay_1s();
+			//Delay1sWith4MHz();
 			//prev_btn = curr_btn;
 			//curr_btn = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13);
 	}
