@@ -1,0 +1,4 @@
+"src/7-3.o"
+"src/func.o"
+"startup/startup_stm32.o"
+"startup/sysmem.o"
