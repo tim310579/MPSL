@@ -3,9 +3,6 @@
 #include "core_cm4.h"
 
 
-#define NVIC_ISER 0xE000E100 // interrupt set-enable registers
-#define NVIC_ICPR 0xE000E280 // interrupt clear-pending registers
-#define NVIC_IPR  0xE000E400 // interrupt priority registers
 #define DO 261.6
 #define RE 293.7
 #define MI 329.6
@@ -16,14 +13,9 @@
 #define HI_DO 523.3
 
 float freq = -1;
-int curr = -2, prev = -3, check = -4;
 int duty_cycle = 50;
-
-unsigned int total, total_check, len;
-char set[14];
-int rem = 0;
-int plln = 40, pllm = 7, prescaler = 0; // 10 MHz SYSCLK
-int prev_btn = 1, curr_btn = 1;
+//float star[14] = {DO, DO, SO, SO, LA, LA, SO, FA, FA, MI, MI, RE, RE, DO};
+unsigned int total;
 int state = 0;
 int cal_len(int n)
 {
@@ -66,42 +58,19 @@ void timer_config()
 	TIM2->CCR2 = duty_cycle;
 	// compare 2 preload value
 }
-
-void start_systick_timer()
-{
-	SysTick->CTRL |= 0x00000001;
-	state = 1;
-}
-
-void stop_systick_timer()
-{
-	SysTick->CTRL &= 0xFFFFFFFE;
-	state = 0;
-}
-
-#define SHPR3 0xE000ED20
-
-void SysTick_UserConfig()
-{
-	SysTick->CTRL |= 0x00000004;
-	SysTick->LOAD = 10000000; // 1.0 second
-	SysTick->VAL = 0;
-	SysTick->CTRL |= 0x00000002;
-	uint32_t *ptr;
-	ptr = (uint32_t *) SHPR3;
-	*ptr = *ptr | 0xF0000000;
-}
-
+int cnt = 0;
 void SysTick_Handler()
 {
-
+	//cnt++;
+	//cnt %= 14;
+	if(state == 1) return;
 	if(total > 0 && state == 0) {
 		total --;
 		display(total, cal_len(total));
 	}
 	if(total == 0 && state == 0){
 		display(0, 1);
-		freq = DO;
+		freq = LA;
 		timer_config();
 		TIM2->CR1 |= TIM_CR1_CEN;
 
@@ -118,74 +87,17 @@ void SystemClock_Config()
 	RCC->CFGR |= 11<<4; //SYSCLK divide by 16. SYSCLK = 16MHz/16 = 1Mhz
 }
 
-void exti_init2()
-{
-	// setup SYSCFG
-	SYSCFG->EXTICR[3] = SYSCFG_EXTICR4_EXTI13_PC;
-
-	// setup EXTI
-	EXTI->IMR1 |= EXTI_IMR1_IM13;
-	EXTI->FTSR1 |= EXTI_FTSR1_FT13;
-	EXTI->PR1 |= EXTI_PR1_PIF13;
-
-	// enable interrupts
-	asm("cpsie i;");
-
-	// setup NVIC
-	// EXTI15_10_IRQn = 40
-	uint32_t *ptr;
-	ptr = (uint32_t *) NVIC_IPR;
-	ptr[10] = 0x00000010;
-	ptr = (uint32_t *) NVIC_ICPR;
-	ptr[1] = 0x00000100;
-	ptr = (uint32_t *) NVIC_ISER;
-	ptr[1] = 0x00000100;
-}
-
-void EXTI15_10_IRQHandler()
-{
-	uint32_t *ptr;
-	ptr = (uint32_t *) NVIC_ICPR;
-	ptr[1] = 0x00000100;
-	EXTI->PR1 |= EXTI_PR1_PIF13;
-	while (1)
-		{
-			prev_btn = curr_btn;
-			curr_btn = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13);
-			if (state == 0 && !prev_btn && curr_btn)
-			{
-				if (total == 0)
-					break;
-				start_systick_timer();
-				break;
-			}
-			else if (state == 1 && !prev_btn && curr_btn)
-			{
-				stop_systick_timer();
-				break;
-			}
-		}
-}
-
-int main()
-{
+int main(void){
 	A:
 	fpu_enable();
 	SystemClock_Config();
-	//SysTick_UserConfig();
 	SysTick_Config(1000000);
 	GPIO_init();
 	max7219_init();
 	keypad_init();
 	timer_init();
-	//exti_init2();
-	//TIM2->CR1 &= ~TIM_CR1_CEN;
 	freq = -1;
 	state = 0;
-	len = 0;
-	int cnt = 0;
-	int input = -1, prev_input = -1;
-	//set_clear();
 	total = -1;
 	while(keypad_scan() == -1);
 	total = keypad_scan();
@@ -195,12 +107,10 @@ int main()
 	while (1){
 		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==0){
 			state = 1;
-
 			TIM2->CR1 &= ~TIM_CR1_CEN;
 			freq = -1;
-			total = 0;
+			//total = 0;
 			goto A;
 		}
 	}
-
 }
