@@ -104,7 +104,6 @@ void SysTick_Handler()
 		freq = DO;
 		timer_config();
 		TIM2->CR1 |= TIM_CR1_CEN;
-		//while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==1);
 
 	}
 }
@@ -149,9 +148,23 @@ void EXTI15_10_IRQHandler()
 	ptr = (uint32_t *) NVIC_ICPR;
 	ptr[1] = 0x00000100;
 	EXTI->PR1 |= EXTI_PR1_PIF13;
-	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==0){
-		stop_systick_timer();
-	}
+	while (1)
+		{
+			prev_btn = curr_btn;
+			curr_btn = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13);
+			if (state == 0 && !prev_btn && curr_btn)
+			{
+				if (total == 0)
+					break;
+				start_systick_timer();
+				break;
+			}
+			else if (state == 1 && !prev_btn && curr_btn)
+			{
+				stop_systick_timer();
+				break;
+			}
+		}
 }
 
 int main()
@@ -165,10 +178,10 @@ int main()
 	max7219_init();
 	keypad_init();
 	timer_init();
-	exti_init2();
+	//exti_init2();
 	//TIM2->CR1 &= ~TIM_CR1_CEN;
 	freq = -1;
-
+	state = 0;
 	len = 0;
 	int cnt = 0;
 	int input = -1, prev_input = -1;
@@ -178,13 +191,16 @@ int main()
 	total = keypad_scan();
 	//display(total, cal_len(total));
 	total++;
-	state = 0;
-	while (1){
-		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==0){
-			//state = 1;
 
-			//goto A;
-		//}
+	while (1){
+		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13)==0){
+			state = 1;
+
+			TIM2->CR1 &= ~TIM_CR1_CEN;
+			freq = -1;
+			total = 0;
+			goto A;
+		}
 	}
 
 }
