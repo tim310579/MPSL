@@ -59,8 +59,8 @@ GPIO_init:
 
 	ldr  r1, =GPIOB_MODER @ GPIOB_MODER
 	ldr  r2, [r1]
-	and  r2, 0b11111111111111111111111100111111
-	orr  r2, 0b00000000000000000000000010000000 @ alternate function mode for PB3
+	and  r2, 0b11111111111111111111111100001111
+	orr  r2, 0b00000000000000000000000010100000 // alternate function mode for PB3
 	str  r2, [r1]
 
 	ldr r1, =GPIOC_MODER
