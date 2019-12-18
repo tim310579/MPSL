@@ -4,10 +4,13 @@
 int main()
 {
 	A:
+	/*ray_init();
+	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8)) display(99, 2);
+	else display(-1, 0);*/
 	gpio_init();
 	max7219_init();
 	keypad_init();
-	SystemClock_Config();
+	//SystemClock_Config();
 	fpu_enable();
 	PB_timer_init();
 	display(0, 1);
@@ -29,15 +32,16 @@ int main()
 
 
 
-	float duty = 10;
+	float duty =10;
+	float time = 461000;
 	if(choose == 1){
 		TIM_TypeDef	*timer = TIM3;
-		timer->PSC = (uint32_t) (1000000/50/100);	//period = 0.02sec
+		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
 		timer_init_pb4(timer);	// for pb4 tim3 ch1
 		GPIOB->MODER &= GPIO_MODER_MODE4_1;	//disable others
 		timer->CCR1 = duty;
 		timer->CR1 |= TIM_CR1_CEN;
-		int j = 110000;		//spin 360', one cycle
+		int j = time;		//spin 360', one cycle
 		while(j > 0){
 			j--;
 		}
@@ -46,25 +50,27 @@ int main()
 
 	else if(choose == 2){		//second candy
 		TIM_TypeDef	*timer = TIM3;
-		timer->PSC = (uint32_t) (1000000/50/100);	//period = 0.02sec
+		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
 		timer_init_pb5(timer);	// for pb5 tim3 ch2
 		GPIOB->MODER &= GPIO_MODER_MODE5_1;	//disable others
 		timer->CCR2 = duty;
 		timer->CR1 |= TIM_CR1_CEN;
-		int j = 110000;		//spin 360', one cycle
+		int j = time;		//spin 360', one cycle
+
 		while(j > 0){
 			j--;
 		}
+
 		timer->CR1 &= ~TIM_CR1_CEN;
 	}
 	else if(choose == 3){
 		TIM_TypeDef	*timer = TIM4;
-		timer->PSC = (uint32_t) (1000000/50/100);	//period = 0.02sec
+		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
 		timer_init_pb6(timer);	// for pb6 tim4 ch1
 		GPIOB->MODER &= GPIO_MODER_MODE6_1;	//disable others
 		timer->CCR1 = duty;
 		timer->CR1 |= TIM_CR1_CEN;
-		int j = 110000;		//spin 360', one cycle
+		int j = time;		//spin 360', one cycle
 		while(j > 0){
 			j--;
 		}
@@ -114,11 +120,7 @@ int main()
 
 		//timer->CR1 |= TIM_CR1_CEN;
 
-		int delay = 110000;
 
-		while(delay > 0){
-			delay--;
-		}
 
 		goto A;
 
