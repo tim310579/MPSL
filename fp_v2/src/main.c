@@ -32,14 +32,25 @@ int main()
 
 
 
-	float duty =10;
+	float duty = 10;
 	float time = 461000;
 	if(choose == 1){
 		TIM_TypeDef	*timer = TIM3;
 		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
 		timer_init_pb4(timer);	// for pb4 tim3 ch1
 		GPIOB->MODER &= GPIO_MODER_MODE4_1;	//disable others
-		timer->CCR1 = duty;
+		/*float change[5] = {10, 20, 10, 20, 10};
+		int i;
+		for(i = 0; i < 5; i++){
+				timer->CCR1 = change[i];		//change this vlaue to 2.5, 5, 7.5, 10, 12.5, 15
+				timer->CR1 |= TIM_CR1_CEN;
+				int j = 200000;
+				while(j > 0){
+					j--;
+				}
+		}*/
+
+		timer->CCR1 = 2.5;
 		timer->CR1 |= TIM_CR1_CEN;
 		int j = time;		//spin 360', one cycle
 		while(j > 0){
@@ -55,7 +66,7 @@ int main()
 		GPIOB->MODER &= GPIO_MODER_MODE5_1;	//disable others
 		timer->CCR2 = duty;
 		timer->CR1 |= TIM_CR1_CEN;
-		int j = time;		//spin 360', one cycle
+		int j = 565000;		//spin 360', one cycle
 
 		while(j > 0){
 			j--;
