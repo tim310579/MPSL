@@ -268,7 +268,7 @@ int cal_len(int n)
 #define X1 GPIO_Pin_1
 #define X2 GPIO_Pin_2
 #define X3 GPIO_Pin_3
-#define Y0 GPIO_Pin_8	//pa0,1,2,3 input
+#define Y0 GPIO_Pin_8	//pa8,9,10,11 input
 #define Y1 GPIO_Pin_9
 #define Y2 GPIO_Pin_10
 #define Y3 GPIO_Pin_11
@@ -321,4 +321,13 @@ signed char keypad_scan()
 
 	return -1;
 }
+
+void ray_init(){
+	GPIOC->MODER &= 0xFF00FFFF;	//pc 8,9,10,11
+	//GPIOC->MODER |= 0x0000;
+	GPIOC->PUPDR &= 0xFF00FFFF;
+	GPIOC->PUPDR |= 0x550000;
+	GPIOC->IDR &= 0xF0FF;
+}
+//void ray()
 #endif /* UTILS_H_ */
