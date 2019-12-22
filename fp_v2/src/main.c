@@ -1,9 +1,40 @@
 #include "stm32l476xx.h"
 #include "utils.h"
 
+int money = 0;
+void IRQ_Init(){
+	//PC8-11
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+	SYSCFG->EXTICR[2] &= 0x0000;
+	SYSCFG->EXTICR[2] |= 0x0022;
+
+	EXTI->RTSR1 |=(3<<8);
+	EXTI->FTSR1 &=~(3<<8);
+
+	EXTI->PR1|=(3<<8);
+	EXTI->IMR1|=(3<<8);
+
+	//NVIC_SetPriority(EXTI15_10_IRQn,5);
+	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+	NVIC_EnableIRQ(EXTI9_5_IRQn);
+}
+
+void EXTI9_5_IRQHandler(void){ //user button
+
+	if((GPIOC->IDR&(1<<8))){
+		money+=5;
+	}
+	if((GPIOC->IDR&(1<<9))){
+		money+=10;
+	}
+	EXTI->PR1|=(3<<8);
+	//EXTI->PR1|=(1<<9);
+}
+
 int main()
 {
 	A:
+	money = 0;
 	gpio_init();
 	max7219_init();
 	display(0, 1);
@@ -11,47 +42,41 @@ int main()
 	fpu_enable();
 	PB_timer_init();
 	display(0, 1);
-	int money = 0;
+
 	ray_init();
-	int flag = 0;
 
+	IRQ_Init();
+	coin:
 	while(1){
-		int cnt = 0;
-
-		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8)) money = 1;
-		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9)) {
-
-			money += 5;
-			flag = 1;
-			cnt++;
-		}
-		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_10)){
-			money += 5;
-			flag = 1;
-			cnt++;
-		}
-
-		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_11)) money = 50;
-		if(keypad_scan() != -1) break;
 		display(money, cal_len(money));
-		int j = 50000;
-		while(j > 0 && cnt > 0){
-			j--;
-			if(keypad_scan() != -1) break;
-		}
+		if(keypad_scan() != -1) break;
 	}
 
-
 	int choose = keypad_scan();
+	int rem = 0;
 	if(choose == 1){
-		int rem = money - 5;
+		if(money < 5) {
+			display(87, 2);
+			goto coin;
+		}
+		rem = money - 5;
 		display(rem, cal_len(rem));
 	}
 	else if(choose == 2){
-		display(20, cal_len(20));
+		if(money < 20) {
+			display(87, 2);
+			goto coin;
+		}
+		rem = money - 20;
+		display(rem, cal_len(rem));
 	}
 	else if(choose == 3){
-		display(30, cal_len(30));
+		if(money < 30) {
+			display(87, 2);
+			goto coin;
+		}
+		rem = money - 30;
+		display(rem, cal_len(rem));
 	}
 
 	//TIM_TypeDef	*timer = TIM2;

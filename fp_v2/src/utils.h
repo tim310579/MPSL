@@ -323,7 +323,7 @@ signed char keypad_scan()
 }
 
 void ray_init(){
-	GPIOC->MODER &= 0xFF00FFFF;	//pc 8,9,10,11
+	GPIOC->MODER &= 0xFF00FFFF;	//pa 8,9,10,11
 	//GPIOC->MODER |= 0x0000;
 	GPIOC->PUPDR &= 0xFF00FFFF;
 	GPIOC->PUPDR |= 0x550000;
