@@ -4,20 +4,37 @@
 int main()
 {
 	A:
-	/*ray_init();
-	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8)) display(99, 2);
-	else display(-1, 0);*/
 	gpio_init();
 	max7219_init();
+	display(0, 1);
 	keypad_init();
-	//SystemClock_Config();
 	fpu_enable();
 	PB_timer_init();
 	display(0, 1);
-	while(keypad_scan() == -1);
+	int money = 0;
+	ray_init();
+	int flag = 0;
+	while(1){
+
+		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8)) money = 1;
+		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9)) money = 5;
+		while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_10) && !flag){
+			money += 10;
+			flag = 1;
+			break;
+		}
+
+		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_11)) money = 50;
+		if(keypad_scan() != -1) break;
+		display(money, cal_len(money));
+	}
+	//end;
+
+	//while(keypad_scan() == -1);
 	int choose = keypad_scan();
 	if(choose == 1){
-		display(5, cal_len(5));
+		int rem = money - 5;
+		display(rem, cal_len(rem));
 	}
 	else if(choose == 2){
 		display(20, cal_len(20));
@@ -32,25 +49,16 @@ int main()
 
 
 
-	float duty = 10;
-	float time = 461000;
+	float duty = 1;
+	float time = 440000;
 	if(choose == 1){
 		TIM_TypeDef	*timer = TIM3;
 		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
 		timer_init_pb4(timer);	// for pb4 tim3 ch1
 		GPIOB->MODER &= GPIO_MODER_MODE4_1;	//disable others
-		/*float change[5] = {10, 20, 10, 20, 10};
-		int i;
-		for(i = 0; i < 5; i++){
-				timer->CCR1 = change[i];		//change this vlaue to 2.5, 5, 7.5, 10, 12.5, 15
-				timer->CR1 |= TIM_CR1_CEN;
-				int j = 200000;
-				while(j > 0){
-					j--;
-				}
-		}*/
 
-		timer->CCR1 = 2.5;
+
+		timer->CCR1 = duty/2;
 		timer->CR1 |= TIM_CR1_CEN;
 		int j = time;		//spin 360', one cycle
 		while(j > 0){
@@ -66,7 +74,7 @@ int main()
 		GPIOB->MODER &= GPIO_MODER_MODE5_1;	//disable others
 		timer->CCR2 = duty;
 		timer->CR1 |= TIM_CR1_CEN;
-		int j = 565000;		//spin 360', one cycle
+		int j = 250000;		//spin 360', one cycle
 
 		while(j > 0){
 			j--;
@@ -79,7 +87,7 @@ int main()
 		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
 		timer_init_pb6(timer);	// for pb6 tim4 ch1
 		GPIOB->MODER &= GPIO_MODER_MODE6_1;	//disable others
-		timer->CCR1 = duty;
+		timer->CCR1 = duty/2;
 		timer->CR1 |= TIM_CR1_CEN;
 		int j = time;		//spin 360', one cycle
 		while(j > 0){
