@@ -323,11 +323,108 @@ signed char keypad_scan()
 }
 
 void ray_init(){
-	GPIOC->MODER &= 0xFF00FFFF;	//pa 8,9,10,11
+	GPIOC->MODER &= 0xFFF0FFFF;	//pa 8,9,10,11
 	//GPIOC->MODER |= 0x0000;
-	GPIOC->PUPDR &= 0xFF00FFFF;
-	GPIOC->PUPDR |= 0x550000;
-	GPIOC->IDR &= 0xF0FF;
+	GPIOC->PUPDR &= 0xFFF0FFFF;
+	GPIOC->PUPDR |= 0x50000;
+	GPIOC->IDR   &= 0xFCFF;
 }
+void give_1st(float duty, int time){
+	TIM_TypeDef	*timer = TIM3;
+	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
+	timer_init_pb4(timer);	// for pb4 tim3 ch1
+	GPIOB->MODER &= GPIO_MODER_MODE4_1;	//disable others
+	timer->CCR1 = duty/2;
+	timer->CR1 |= TIM_CR1_CEN;
+	int j = time;		//spin 360', one cycle
+	while(j > 0){
+		j--;
+	}
+	timer->CR1 &= ~TIM_CR1_CEN;
+}
+void give_2nd(float duty, int time){
+	TIM_TypeDef	*timer = TIM3;
+	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
+	timer_init_pb5(timer);	// for pb5 tim3 ch2
+	GPIOB->MODER &= GPIO_MODER_MODE5_1;	//disable others
+	timer->CCR2 = duty/2;
+	timer->CR1 |= TIM_CR1_CEN;
+	int j = time;		//spin 360', one cycle
+	while(j > 0){
+		j--;
+	}
+
+	timer->CR1 &= ~TIM_CR1_CEN;
+}
+void give_3rd(float duty, int time){
+	TIM_TypeDef	*timer = TIM4;
+	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
+	timer_init_pb6(timer);	// for pb6 tim4 ch1
+	GPIOB->MODER &= GPIO_MODER_MODE6_1;	//disable others
+	timer->CCR1 = duty/2;
+	timer->CR1 |= TIM_CR1_CEN;
+	int j = time;		//spin 360', one cycle
+	while(j > 0){
+		j--;
+	}
+	timer->CR1 &= ~TIM_CR1_CEN;
+}
+void back_10(float duty, int time){
+	TIM_TypeDef	*timer = TIM4;
+	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
+	timer_init_pb7(timer);	// for pb7 tim4 ch1
+	GPIOB->MODER &= GPIO_MODER_MODE7_1;	//disable others
+	timer->CCR2 = duty/2;
+	timer->CR1 |= TIM_CR1_CEN;
+	int j = time;		//spin 360', one cycle
+	while(j > 0){
+		j--;
+	}
+	timer->CR1 &= ~TIM_CR1_CEN;
+}
+void back_5(float duty, int time){
+	TIM_TypeDef	*timer = TIM4;
+	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
+	timer_init_pb8(timer);	// for pb8 tim4 ch1
+	GPIOB->MODER &= GPIO_MODER_MODE8_1;	//disable others
+	timer->CCR3 = duty/2;
+	timer->CR1 |= TIM_CR1_CEN;
+	int j = time;		//spin 360', one cycle
+	while(j > 0){
+		j--;
+	}
+	timer->CR1 &= ~TIM_CR1_CEN;
+}
+void back_1(float duty, int time){
+	TIM_TypeDef	*timer = TIM4;
+	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
+	timer_init_pb9(timer);	// for pb9 tim4 ch1
+	GPIOB->MODER &= GPIO_MODER_MODE9_1;	//disable others
+	timer->CCR4 = duty/2;
+	timer->CR1 |= TIM_CR1_CEN;
+	int j = time;		//spin 360', one cycle
+	while(j > 0){
+		j--;
+	}
+	timer->CR1 &= ~TIM_CR1_CEN;
+}
+
+void IRQ_Init(){
+	//PC8-11
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+	SYSCFG->EXTICR[2] &= 0x7700;
+	SYSCFG->EXTICR[2] |= 0x0022;
+
+	EXTI->RTSR1 |=(3<<8);
+	EXTI->FTSR1 &=~(3<<8);
+
+	EXTI->PR1|=(3<<8);
+	EXTI->IMR1|=(3<<8);
+
+	//NVIC_SetPriority(EXTI15_10_IRQn,5);
+	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+	NVIC_EnableIRQ(EXTI9_5_IRQn);
+}
+
 //void ray()
 #endif /* UTILS_H_ */

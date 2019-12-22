@@ -2,22 +2,8 @@
 #include "utils.h"
 
 int money = 0;
-void IRQ_Init(){
-	//PC8-11
-	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-	SYSCFG->EXTICR[2] &= 0x0000;
-	SYSCFG->EXTICR[2] |= 0x0022;
-
-	EXTI->RTSR1 |=(3<<8);
-	EXTI->FTSR1 &=~(3<<8);
-
-	EXTI->PR1|=(3<<8);
-	EXTI->IMR1|=(3<<8);
-
-	//NVIC_SetPriority(EXTI15_10_IRQn,5);
-	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
-	NVIC_EnableIRQ(EXTI9_5_IRQn);
-}
+float time = 440000;
+float duty = 1;
 
 void EXTI9_5_IRQHandler(void){ //user button
 
@@ -79,58 +65,31 @@ int main()
 		display(rem, cal_len(rem));
 	}
 
-	//TIM_TypeDef	*timer = TIM2;
-
-	//TIM_TypeDef	*timer = TIM3;
-
-
-
-	float duty = 1;
-	float time = 440000;
 	if(choose == 1){
-		TIM_TypeDef	*timer = TIM3;
-		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-		timer_init_pb4(timer);	// for pb4 tim3 ch1
-		GPIOB->MODER &= GPIO_MODER_MODE4_1;	//disable others
-
-
-		timer->CCR1 = duty/2;
-		timer->CR1 |= TIM_CR1_CEN;
-		int j = time;		//spin 360', one cycle
-		while(j > 0){
-			j--;
-		}
-		timer->CR1 &= ~TIM_CR1_CEN;
+		give_1st(duty, time);	//first candy, spin is in "utils.h"
 	}
 
 	else if(choose == 2){		//second candy
-		TIM_TypeDef	*timer = TIM3;
-		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-		timer_init_pb5(timer);	// for pb5 tim3 ch2
-		GPIOB->MODER &= GPIO_MODER_MODE5_1;	//disable others
-		timer->CCR2 = duty;
-		timer->CR1 |= TIM_CR1_CEN;
-		int j = 250000;		//spin 360', one cycle
-
-		while(j > 0){
-			j--;
-		}
-
-		timer->CR1 &= ~TIM_CR1_CEN;
+		give_2nd(duty, time);
 	}
 	else if(choose == 3){
-		TIM_TypeDef	*timer = TIM4;
-		timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-		timer_init_pb6(timer);	// for pb6 tim4 ch1
-		GPIOB->MODER &= GPIO_MODER_MODE6_1;	//disable others
-		timer->CCR1 = duty/2;
-		timer->CR1 |= TIM_CR1_CEN;
-		int j = time;		//spin 360', one cycle
-		while(j > 0){
-			j--;
-		}
-		timer->CR1 &= ~TIM_CR1_CEN;
+		give_3rd(duty, time);
 	}
+
+	while(rem >= 10){
+		rem -= 10;
+		back_10(duty, time);	//give 10 dollars back
+	}
+	while(rem >= 5){
+		rem -= 5;
+		back_5(duty, time);
+	}
+	while(rem >= 1){
+		rem -= 1;
+		back_1(duty, time);
+	}
+
+	goto A;
 	//timer_init_pb3(timer);		//for pb3 tim2 ch2
 
 	//timer_init_pb4(timer);		// for pb4 tim3 ch1
@@ -177,7 +136,7 @@ int main()
 
 
 
-		goto A;
+
 
 
 }
