@@ -14,23 +14,34 @@ int main()
 	int money = 0;
 	ray_init();
 	int flag = 0;
+
 	while(1){
+		int cnt = 0;
 
 		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8)) money = 1;
-		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9)) money = 5;
-		while(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_10) && !flag){
-			money += 10;
+		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9)) {
+
+			money += 5;
 			flag = 1;
-			break;
+			cnt++;
+		}
+		if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_10)){
+			money += 5;
+			flag = 1;
+			cnt++;
 		}
 
 		//if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_11)) money = 50;
 		if(keypad_scan() != -1) break;
 		display(money, cal_len(money));
+		int j = 50000;
+		while(j > 0 && cnt > 0){
+			j--;
+			if(keypad_scan() != -1) break;
+		}
 	}
-	//end;
 
-	//while(keypad_scan() == -1);
+
 	int choose = keypad_scan();
 	if(choose == 1){
 		int rem = money - 5;
