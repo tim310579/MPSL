@@ -7,14 +7,14 @@ S_SRCS += \
 ../src/utils.s 
 
 C_SRCS += \
-../src/main7.3.c 
+../src/main.c 
 
 OBJS += \
-./src/main7.3.o \
+./src/main.o \
 ./src/utils.o 
 
 C_DEPS += \
-./src/main7.3.d 
+./src/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
