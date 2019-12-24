@@ -5,16 +5,32 @@ int money = 0;
 float time = 440000;
 float duty = 1;
 
+void IRQ_Init(){
+	//PC8-11
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+	SYSCFG->EXTICR[2] &= 0x7700;
+	SYSCFG->EXTICR[2] |= 0x0022;
+
+	EXTI->RTSR1 |=(3<<8);
+	EXTI->FTSR1 &=~(3<<8);
+
+	EXTI->PR1|=(3<<8);
+	EXTI->IMR1|=(3<<8);
+
+	//NVIC_SetPriority(EXTI15_10_IRQn,5);
+	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+	NVIC_EnableIRQ(EXTI9_5_IRQn);
+}
 void EXTI9_5_IRQHandler(void){ //user button
 
 	if((GPIOC->IDR&(1<<8))){
-		money+=5;
+		money += 1;
 	}
 	if((GPIOC->IDR&(1<<9))){
-		money+=10;
+		money += 10;
 	}
-	EXTI->PR1|=(3<<8);
-	//EXTI->PR1|=(1<<9);
+	EXTI->PR1|=(1<<8);
+	EXTI->PR1|=(1<<9);
 }
 
 int main()
@@ -23,7 +39,7 @@ int main()
 	money = 0;
 	gpio_init();
 	max7219_init();
-	display(0, 1);
+
 	keypad_init();
 	fpu_enable();
 	PB_timer_init();
@@ -78,15 +94,15 @@ int main()
 
 	while(rem >= 10){
 		rem -= 10;
-		back_10(duty, time);	//give 10 dollars back
+		back_10(duty, time*2/3);	//give 10 dollars back
 	}
 	while(rem >= 5){
 		rem -= 5;
-		back_5(duty, time);
+		back_5(duty, time*2/3);
 	}
 	while(rem >= 1){
 		rem -= 1;
-		back_1(duty, time);
+		back_1(duty, time*2/3);
 	}
 
 	goto A;

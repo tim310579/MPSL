@@ -87,16 +87,66 @@ int GPIO_ReadInputDataBit(GPIO_TypeDef *a, uint16_t b) {
 void PB_timer_init()
 {
 	RCC->AHB2ENR   |= 0b00000000000000000000000000000111;
-	GPIOB->MODER   &= 0b11111111111010101010101010111111;
+
+	GPIOB->MODER   &= 0b11111111111010101010101010101010;
+	//GPIOB->MODER &= 0;
 	GPIOB->PUPDR   &= 0b11111111111111111111111111111111;
 	GPIOB->PUPDR   |= 0b00000000000000000000000000000000;
 	GPIOB->OSPEEDR &= 0b11111111111111111111111111111111;
 	GPIOB->OSPEEDR |= 0b00000000000000000000000000000000;
+
 }
+void timer_init_pb0(TIM_TypeDef *timer)
+{
+	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
+	GPIOB->MODER |= GPIO_MODER_MODE0_1;
+	GPIOB->AFR[0] |= GPIO_AFRL_AFSEL0_1;	/* PB0: AF2 (TIM3_CH3) */
+	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
+
+	timer->ARR = (uint32_t) 99;
+	timer->CR1 |= TIM_CR1_DIR;
+	//CH3
+	timer->CCMR2 &= 0xFFFFFCFF;
+	// select compare 2 (channel 2 is configured as output)
+	timer->CCMR2 |= (TIM_CCMR2_OC3M_2 | TIM_CCMR2_OC3M_1);
+	// set output compare 2 mode to PWM mode 1
+	timer->CCMR2 |= TIM_CCMR2_OC3PE;
+	timer->CR1 |= TIM_CR1_ARPE;
+	timer->CCER |= TIM_CCER_CC3E;
+		// enable compare 2 output
+	timer->EGR = TIM_EGR_UG;
+	// re-initialize the counter and generates an update of the registers
+}
+
+void timer_init_pb1(TIM_TypeDef *timer)
+{
+	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
+	GPIOB->MODER |= GPIO_MODER_MODE1_1;
+	GPIOB->AFR[0] |= GPIO_AFRL_AFSEL1_1;	/* PB1: AF2 (TIM3_CH4) */
+	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM3EN;
+	timer->ARR = (uint32_t) 99;
+
+	timer->CR1 |= TIM_CR1_DIR;	// counter used as downcounter
+
+	timer->CCMR2 &= 0xFFFFFCFF;
+	// select compare 2 (channel 2 is configured as output)
+	timer->CCMR2 |= (TIM_CCMR2_OC4M_2 | TIM_CCMR2_OC4M_1);
+	// set output compare 2 mode to PWM mode 1
+	timer->CCMR2 |= TIM_CCMR2_OC4PE;
+	// enable output compare 2 preload register on TIM2_CCR2
+	timer->CR1 |= TIM_CR1_ARPE;
+	timer->CCER |= TIM_CCER_CC4E;
+		// enable compare 2 output
+	timer->EGR = TIM_EGR_UG;
+	// re-initialize the counter and generates an update of the registers
+
+}
+
 void timer_init_pb3(TIM_TypeDef *timer)
 {
 	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
 	// enable TIM2 timer clock
+	GPIOB->MODER |= GPIO_MODER_MODE3_1;
 	GPIOB->AFR[0] |= GPIO_AFRL_AFSEL3_0;
 	// select AF1 for PB3 (PB3 is TIM2_CH2)
 	timer->CR1 |= TIM_CR1_DIR;
@@ -117,7 +167,6 @@ void timer_init_pb3(TIM_TypeDef *timer)
 	// re-initialize the counter and generates an update of the registers
 }
 
-
 void timer_init_pb4 (TIM_TypeDef *timer)
 {
 	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
@@ -135,6 +184,7 @@ void timer_init_pb4 (TIM_TypeDef *timer)
 	timer->EGR = TIM_EGR_UG;
 	timer->CCER |= TIM_CCER_CC1E;	/* CH1 */
 }
+
 void timer_init_pb5 (TIM_TypeDef *timer)
 {
 	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
@@ -153,6 +203,7 @@ void timer_init_pb5 (TIM_TypeDef *timer)
 	timer->EGR = TIM_EGR_UG;
 	timer->CCER |= TIM_CCER_CC2E;	/* CH2 */
 }
+
 void timer_init_pb6 (TIM_TypeDef *timer)
 {
 	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
@@ -170,6 +221,7 @@ void timer_init_pb6 (TIM_TypeDef *timer)
 	timer->EGR = TIM_EGR_UG;
 	timer->CCER |= TIM_CCER_CC1E;	/* CH1 */
 }
+
 void timer_init_pb7 (TIM_TypeDef *timer)
 {
 	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
@@ -188,6 +240,7 @@ void timer_init_pb7 (TIM_TypeDef *timer)
 	timer->EGR = TIM_EGR_UG;
 	timer->CCER |= TIM_CCER_CC2E;	/* CH2 */
 }
+
 void timer_init_pb8(TIM_TypeDef *timer)
 {
 	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
@@ -210,6 +263,7 @@ void timer_init_pb8(TIM_TypeDef *timer)
 	timer->EGR = TIM_EGR_UG;
 	// re-initialize the counter and generates an update of the registers
 }
+
 void timer_init_pb9(TIM_TypeDef *timer)
 {
 	RCC->AHB2ENR |= 0x1 << 1;	/* enable AHB2 clock for port B */
@@ -231,7 +285,6 @@ void timer_init_pb9(TIM_TypeDef *timer)
 		// enable compare 2 output
 	timer->EGR = TIM_EGR_UG;
 	// re-initialize the counter and generates an update of the registers
-
 }
 void SystemClock_Config(){
 	RCC->CFGR = 0x00000001;	//choose HSI
@@ -372,7 +425,7 @@ void give_3rd(float duty, int time){
 void back_10(float duty, int time){
 	TIM_TypeDef	*timer = TIM4;
 	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-	timer_init_pb7(timer);	// for pb7 tim4 ch1
+	timer_init_pb7(timer);	// for pb7 tim4 ch2
 	GPIOB->MODER &= GPIO_MODER_MODE7_1;	//disable others
 	timer->CCR2 = duty/2;
 	timer->CR1 |= TIM_CR1_CEN;
@@ -385,7 +438,7 @@ void back_10(float duty, int time){
 void back_5(float duty, int time){
 	TIM_TypeDef	*timer = TIM4;
 	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-	timer_init_pb8(timer);	// for pb8 tim4 ch1
+	timer_init_pb8(timer);	// for pb8 tim4 ch3
 	GPIOB->MODER &= GPIO_MODER_MODE8_1;	//disable others
 	timer->CCR3 = duty/2;
 	timer->CR1 |= TIM_CR1_CEN;
@@ -398,7 +451,7 @@ void back_5(float duty, int time){
 void back_1(float duty, int time){
 	TIM_TypeDef	*timer = TIM4;
 	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-	timer_init_pb9(timer);	// for pb9 tim4 ch1
+	timer_init_pb9(timer);	// for pb9 tim4 ch4
 	GPIOB->MODER &= GPIO_MODER_MODE9_1;	//disable others
 	timer->CCR4 = duty/2;
 	timer->CR1 |= TIM_CR1_CEN;
@@ -409,22 +462,8 @@ void back_1(float duty, int time){
 	timer->CR1 &= ~TIM_CR1_CEN;
 }
 
-void IRQ_Init(){
-	//PC8-11
-	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-	SYSCFG->EXTICR[2] &= 0x7700;
-	SYSCFG->EXTICR[2] |= 0x0022;
 
-	EXTI->RTSR1 |=(3<<8);
-	EXTI->FTSR1 &=~(3<<8);
 
-	EXTI->PR1|=(3<<8);
-	EXTI->IMR1|=(3<<8);
-
-	//NVIC_SetPriority(EXTI15_10_IRQn,5);
-	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
-	NVIC_EnableIRQ(EXTI9_5_IRQn);
-}
 
 //void ray()
 #endif /* UTILS_H_ */
