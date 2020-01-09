@@ -1,6 +1,7 @@
 #include "stm32l476xx.h"
 #include "utils.h"
 
+int flag[4] = {0};
 int money = 0;
 float time = 660000;
 float duty = 1;
@@ -26,21 +27,25 @@ void IRQ_Init(){
 }
 void EXTI9_5_IRQHandler(void){ //user button
 
-	if((GPIOC->IDR&(1<<8))){
+	if((GPIOC->IDR&(1<<8)) && flag[0] == 0){	//can add money
 		money += 1;
+		flag[0] = 1;
 	}
-	else if((GPIOC->IDR&(1<<9))){
+	else if((GPIOC->IDR&(1<<9)) && flag[1] == 0){
 		money += 4;
+		flag[1] = 1;
 	}
 	EXTI->PR1|=(1<<8);
 	EXTI->PR1|=(1<<9);
 }
 void EXTI15_10_IRQHandler(void){
-	if((GPIOC->IDR&(1<<10))){
-		money += 3;
+	if((GPIOC->IDR&(1<<10)) && flag[2] == 0){
+		money += 5;
+		flag[2] = 1;
 	}
-	else if((GPIOC->IDR&(1<<11))){
+	else if((GPIOC->IDR&(1<<11)) && flag[3] == 0){
 		money += 40;
+		flag[3] = 1;
 	}
 	EXTI->PR1|=(1<<10);
 	EXTI->PR1|=(1<<11);
@@ -65,6 +70,16 @@ int main()
 		if(money > 50) money = 50;
 		display(money, cal_len(money));
 		if(keypad_scan() != -1) break;
+		if(flag[0]||flag[1]||flag[2]||flag[3]){	//delay
+			int i = 0;
+			for(i = 0; i < 20000; i++){
+				if(keypad_scan() != -1) break;
+				//do nothing
+			}
+			for(i = 0; i< 4; i++){
+				flag[i] = 0;
+			}
+		}
 	}
 
 	int choose = keypad_scan();
