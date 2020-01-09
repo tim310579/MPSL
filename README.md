@@ -19,6 +19,6 @@
 8. learn to use UART and ADC, too hard
 
 
-## Final Project: 
+## Final Project
 
- Vending Machine
+Vending Machine(candy), can display what money give and push the merchandise which you choose 
