@@ -1,7 +1,7 @@
 # Micro_Processor_System_Lab
 
-##for labs
+## for labs
 
-##Final Project:
+## Final Project:
 
-###Vending Machine
+### Vending Machine
