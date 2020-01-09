@@ -2,6 +2,4 @@
 
 ## for labs
 
-## Final Project:
-
-### Vending Machine
+## Final Project: ### Vending Machine
