@@ -2,6 +2,7 @@
 
 ## for lab1-8
 
+1-2 : some stack and assembly, not difficult
 
 ## Final Project: 
 
