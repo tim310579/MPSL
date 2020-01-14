@@ -110,27 +110,30 @@ int main()
 	}
 
 	if(choose == 1){
-		give_1st(duty, time*83/100);	//first candy, spin is in "utils.h" pb4
+		give_1st(duty, time*12/10);	//first candy, spin is in "utils.h" pb4
 	}
 
 	else if(choose == 2){		//second candy
-		give_2nd(duty, time);	//pb5
+		give_2nd(duty, time*12/10);	//pb5
 	}
 	else if(choose == 3){
-		give_3rd(duty, time*85/100);	//pb6
+		give_3rd(duty, time*12/10);	//pb6
 	}
 
 	while(rem >= 10){
 		rem -= 10;
-		back_10(duty, time*2/3);	//give 10 dollars back //pb7
+		back_10(duty, time);	//give 10 dollars back //pb7
+		display(rem, cal_len(rem));
 	}
 	while(rem >= 5){
 		rem -= 5;
-		back_5(duty, time*2/3);	//pb8
+		back_5(duty, time);	//pb1
+		display(rem, cal_len(rem));
 	}
 	while(rem >= 1){
 		rem -= 1;
-		back_1(duty, time*2/3);	//pb9
+		back_1(duty, time);	//pb9
+		display(rem, cal_len(rem));
 	}
 
 	goto A;

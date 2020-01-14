@@ -436,11 +436,11 @@ void back_10(float duty, int time){
 	timer->CR1 &= ~TIM_CR1_CEN;
 }
 void back_5(float duty, int time){
-	TIM_TypeDef	*timer = TIM4;
+	TIM_TypeDef	*timer = TIM3;
 	timer->PSC = (uint32_t) (4000000/50/100);	//period = 0.02sec
-	timer_init_pb8(timer);	// for pb8 tim4 ch3
-	GPIOB->MODER &= GPIO_MODER_MODE8_1;	//disable others
-	timer->CCR3 = duty/2;
+	timer_init_pb1(timer);	// for pb1 tim3 ch4
+	GPIOB->MODER &= GPIO_MODER_MODE1_1;	//disable others
+	timer->CCR4 = duty/2;
 	timer->CR1 |= TIM_CR1_CEN;
 	int j = time;		//spin 360', one cycle
 	while(j > 0){
