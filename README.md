@@ -21,4 +21,6 @@
 
 ## Final Project
 
-Vending Machine(candy), can display what money give and push the merchandise which you choose 
+Vending Machine(candy), can display what money give and push the merchandise which you choose.
+
+Then back the money remained.
