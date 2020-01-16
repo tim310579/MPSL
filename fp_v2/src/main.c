@@ -110,14 +110,14 @@ int main()
 	}
 
 	if(choose == 1){
-		give_1st(duty, time*12/10);	//first candy, spin is in "utils.h" pb4
+		give_1st(duty, time*11/10);	//first candy, spin is in "utils.h" pb4
 	}
 
 	else if(choose == 2){		//second candy
-		give_2nd(duty, time*12/10);	//pb5
+		give_2nd(duty, time*13/10);	//pb5
 	}
 	else if(choose == 3){
-		give_3rd(duty, time*12/10);	//pb6
+		give_3rd(duty, time*125/100);	//pb6
 	}
 
 	while(rem >= 10){
